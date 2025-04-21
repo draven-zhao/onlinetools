@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>文件管理系统</title>
+    <style>
+        body {
+            background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; background-color: rgba(255,255,255,0.9); border-radius: 8px; }
+        .upload-section { 
+            margin-bottom: 30px; 
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .file-list { list-style: none; padding: 0; }
+        .file-item { 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border: none;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .file-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .file-actions form { display: inline-block; margin-left: 10px; }
+        
+        /* 上传区域样式 */
+
+        .upload-area {
+            border: 3px dashed #007bff;
+            padding: 60px 40px;
+            text-align: center;
+            margin: 30px 0;
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .upload-area:hover {
+            background: rgba(0,123,255,0.05);
+            border-color: #0056b3;
+        }
+        .upload-area.drag-over {
+            background: rgba(0,123,255,0.1);
+            border-color: #0056b3;
+        }
+        .upload-area i {
+            font-size: 48px;
+            color: #007bff;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .upload-area p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        
+        /* 进度条样式 */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #f1f1f1;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* 按钮样式 */
+        button, input[type="submit"] {
+            background: linear-gradient(to right, #4776E6, #8E54E9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button:hover, input[type="submit"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* 文件选择样式 */
+        input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-section">
+            <h2>上传新文件</h2>
+            <div class="upload-area" id="dropArea">
+                <i>📁</i>
+                <p>点击或拖放文件到此处上传</p>
+                <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <input type="file" name="file" id="fileInput" required>
+                    <button type="submit">上传</button>
+                </form>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <h2>文件列表</h2>
+        <ul class="file-list">
+            {{ range .Files }}
+            <li class="file-item">
+                <span>{{ base . }}</span>
+                <div class="file-actions">
+                    <a href="/download/{{ base . }}" download>
+                        <button>下载</button>
+                    </a>
+                    <form action="/delete/{{ base . }}" method="post">
+                        <button type="submit">删除</button>
+                    </form>
+                </div>
+            </li>
+            {{ end }}
+        </ul>
+    </div>
+</body>
+</html>
